@@ -1,0 +1,4 @@
+# Project exclude paths
+/.gradle/
+/microservices/product-service/.gradle/
+/util/.gradle/
