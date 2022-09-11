@@ -12,7 +12,7 @@ public interface ProductService {
 	@GetMapping(
 			value    = "/product/{productId}",
 			produces = "application/json")
-	Mono<Product> getProduct(@PathVariable int productid);
+	Mono<Product> getProduct(@PathVariable int productId);
 
 	void deleteProduct(@PathVariable int productId);
 }
