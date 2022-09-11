@@ -5,6 +5,8 @@ import com.gongdel.microservices.api.core.prduct.ProductService;
 import com.gongdel.microservices.core.product.persistence.ProductEntity;
 import com.gongdel.microservices.core.product.persistence.ProductRepository;
 import com.gongdel.util.exceptions.InvalidInputException;
+import com.gongdel.util.exceptions.NotFoundException;
+import com.gongdel.util.http.ServiceUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
@@ -18,6 +20,7 @@ public class ProductServiceImpl implements ProductService {
 
 	private final ProductRepository repository;
 	private final ProductMapper mapper;
+	private final ServiceUtil serviceUtil;
 
 	@Override
 	public Product createProduct(Product body) {
@@ -38,8 +41,20 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Mono<Product> getProduct(int productid) {
-		return null;
+	public Mono<Product> getProduct(int productId) {
+		if (productId < 1) {
+			throw new InvalidInputException("Invalid productId: " + productId);
+		}
+		;
+
+		return repository.findByProductId(productId)
+				.switchIfEmpty(Mono.error(new NotFoundException("No product found for productId: " + productId)))
+				.log()
+				.map(e -> mapper.entityToApi(e))
+				.map(e -> {
+					e.setServiceAddress(serviceUtil.getServiceAddress());
+					return e;
+				});
 	}
 
 	@Override

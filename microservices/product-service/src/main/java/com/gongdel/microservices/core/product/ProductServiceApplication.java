@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.mapping.context.MappingContext;
@@ -19,6 +20,7 @@ import org.springframework.data.mongodb.core.mapping.MongoPersistentProperty;
 
 @SpringBootApplication
 @RequiredArgsConstructor
+@ComponentScan("com.gongdel")
 public class ProductServiceApplication {
 
 	private final ReactiveMongoOperations mongoTemplate;
