@@ -22,6 +22,8 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 
+import static reactor.core.publisher.Flux.empty;
+
 @Component
 public class ProductCompositeIntegration implements ProductService, RecommendationService, ReviewService {
 
@@ -86,7 +88,14 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
 	@Override
 	public Flux<Recommendation> getRecommendations(int productId) {
-		return null;
+		String url = recommendationServiceUrl + "/recommendation?productId=" + productId;
+		LOG.debug("Will call the getRecommendations API on URL: {}", url);
+
+		return webClient.get().uri(url)
+				.retrieve()
+				.bodyToFlux(Recommendation.class)
+				.log()
+				.onErrorResume(error -> empty());
 	}
 
 	@Override
@@ -101,7 +110,13 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
 	@Override
 	public Flux<Review> getReviews(int productId) {
-		return null;
+		String url = reviewServiceUrl + "/review?productId=" + productId;
+		LOG.debug("Will call the getReviews API on URL: {}", url);
+
+		return webClient.get().uri(url)
+				.retrieve()
+				.bodyToFlux(Review.class)
+				.onErrorResume(error -> empty());
 	}
 
 	@Override
