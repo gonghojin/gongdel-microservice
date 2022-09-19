@@ -11,15 +11,15 @@ spring.cloud.stream:
   default.contentType: application/json
   bindings.input:
     destination: products
-    group: productsGroup
+    group: productsGroup # 소비자 그룹 생성_products 인스턴스 중 한 인스턴스로만 product 토픽 게시(중복방지)
 
 spring.cloud.stream.bindings.input.consumer:
-  maxAttempts: 3
-  backOffInitialInterval: 500
+  maxAttempts: 3 # 데드 레터 대기열로 이동하기 전에 3회 재시도
+  backOffInitialInterval: 500 # 처음 시도 시 500ms
   backOffMaxInterval: 1000
   backOffMultiplier: 2.0
 
-spring.cloud.stream.rabbit.bindings.input.consumer:
+spring.cloud.stream.rabbit.bindings.input.consumer: # 데드레터 대기열
   autoBindDlq: true
   republishToDlq: true
 
