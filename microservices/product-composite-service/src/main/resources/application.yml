@@ -66,8 +66,8 @@ spring.cloud.stream:
   defaultBinder: rabbit
   default.contentType: application/json
   bindings:
-    output-products:
-      destination: products
+    output-products: # output 채널
+      destination: products # 토픽 이름
       producer:
         required-groups: auditGroup
     output-recommendations:

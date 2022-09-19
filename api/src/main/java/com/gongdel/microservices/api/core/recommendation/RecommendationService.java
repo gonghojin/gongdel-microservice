@@ -9,10 +9,6 @@ import reactor.core.publisher.Flux;
 
 public interface RecommendationService {
 
-	@PostMapping(
-			value    = "/recommendation",
-			consumes = "application/json",
-			produces = "application/json")
 	Recommendation createRecommendation(@RequestBody Recommendation body);
 
 	@GetMapping(

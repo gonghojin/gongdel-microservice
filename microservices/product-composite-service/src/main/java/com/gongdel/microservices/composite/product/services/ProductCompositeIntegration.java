@@ -7,6 +7,7 @@ import com.gongdel.microservices.api.core.recommendation.Recommendation;
 import com.gongdel.microservices.api.core.recommendation.RecommendationService;
 import com.gongdel.microservices.api.core.review.Review;
 import com.gongdel.microservices.api.core.review.ReviewService;
+import com.gongdel.microservices.api.event.Event;
 import com.gongdel.util.exceptions.InvalidInputException;
 import com.gongdel.util.exceptions.NotFoundException;
 import com.gongdel.util.http.HttpErrorInfo;
@@ -14,6 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.cloud.stream.annotation.Output;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -22,8 +27,11 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 
+import static com.gongdel.microservices.api.event.Event.Type.CREATE;
+import static com.gongdel.microservices.api.event.Event.Type.DELETE;
 import static reactor.core.publisher.Flux.empty;
 
+@EnableBinding(ProductCompositeIntegration.MessageSources.class)
 @Component
 public class ProductCompositeIntegration implements ProductService, RecommendationService, ReviewService {
 
@@ -31,15 +39,35 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
 	private final WebClient webClient;
 	private final ObjectMapper mapper;
+	private final MessageSources messageSources;
 
 	private final String productServiceUrl;
 	private final String recommendationServiceUrl;
 	private final String reviewServiceUrl;
 
+	// 토빅별 채널 등록
+	public interface MessageSources {
+
+		String OUTPUT_PRODUCTS = "output-products";
+		String OUTPUT_RECOMMENDATIONS = "output-recommendations";
+		String OUTPUT_REVIEWS = "output-reviews";
+
+		@Output(OUTPUT_PRODUCTS)
+		MessageChannel outputProducts();
+
+		@Output(OUTPUT_RECOMMENDATIONS)
+		MessageChannel outputRecommendations();
+
+		@Output(OUTPUT_REVIEWS)
+		MessageChannel outputReviews();
+	}
+
 	@Autowired
 	public ProductCompositeIntegration(
 			WebClient.Builder webClient,
 			ObjectMapper mapper,
+			MessageSources messageSources,
+
 			@Value("${app.product-service.host}") String productServiceHost,
 			@Value("${app.product-service.port}") int productServicePort,
 
@@ -51,6 +79,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 	) {
 		this.webClient = webClient.build();
 		this.mapper = mapper;
+		this.messageSources = messageSources;
 
 		this.productServiceUrl = "http://" + productServiceHost + ":" + productServicePort;
 		this.recommendationServiceUrl = "http://" + recommendationServiceHost + ":" + recommendationServicePort;
@@ -59,7 +88,10 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
 	@Override
 	public Product createProduct(Product body) {
-		return null;
+		messageSources.outputProducts()
+				.send(MessageBuilder.withPayload(new Event(CREATE, body.getProductId(), body)).build());
+
+		return body;
 	}
 
 	@Override
@@ -83,7 +115,9 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
 	@Override
 	public Recommendation createRecommendation(Recommendation body) {
-		return null;
+		messageSources.outputRecommendations()
+				.send(MessageBuilder.withPayload(new Event(CREATE, body.getProductId(), body)).build());
+		return body;
 	}
 
 	@Override
@@ -105,7 +139,9 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
 	@Override
 	public Review createReview(Review body) {
-		return null;
+		messageSources.outputReviews()
+				.send(MessageBuilder.withPayload(new Event(CREATE, body.getProductId(), body)).build());
+		return body;
 	}
 
 	@Override
@@ -154,4 +190,6 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 			return ex.getMessage();
 		}
 	}
+
+
 }
