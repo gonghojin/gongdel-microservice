@@ -18,6 +18,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import java.util.concurrent.BlockingQueue;
 
 import static com.gongdel.microservices.api.event.Event.Type.CREATE;
+import static com.gongdel.microservices.api.event.Event.Type.DELETE;
 import static com.gongdel.microservices.composite.product.services.IsSameEvent.sameEventExceptCreatedAt;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -80,4 +81,27 @@ public class MessagingTests {
 	}
 
 
+	@Test
+	public void deleteCompositeProduct() {
+		deleteAndVerifyProduct(1, OK);
+		assertEquals(1, queueProducts.size());
+
+		Event<Integer, Product> expectedEvent = new Event(DELETE, 1, null);
+		assertThat(queueProducts, is(receivesPayloadThat(sameEventExceptCreatedAt(expectedEvent))));
+
+		assertEquals(1, queueRecommendations.size());
+		Event<Integer, Product> expectedRecommendationEvent = new Event(DELETE, 1, null);
+		assertThat(queueRecommendations, receivesPayloadThat(sameEventExceptCreatedAt(expectedRecommendationEvent)));
+
+		assertEquals(1, queueReviews.size());
+		Event<Integer, Product> expectedReviewEvent = new Event(DELETE, 1, null);
+		assertThat(queueReviews, receivesPayloadThat(sameEventExceptCreatedAt(expectedReviewEvent)));
+	}
+
+	private void deleteAndVerifyProduct(int productId, HttpStatus ok) {
+		client.delete()
+				.uri("/product-composite/" + productId)
+				.exchange()
+				.expectStatus().isEqualTo(ok);
+	}
 }

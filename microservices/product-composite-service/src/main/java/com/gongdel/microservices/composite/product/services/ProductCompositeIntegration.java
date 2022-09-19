@@ -110,7 +110,8 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
 	@Override
 	public void deleteProduct(int productId) {
-
+		messageSources.outputProducts()
+				.send(MessageBuilder.withPayload(new Event(DELETE, productId, null)).build());
 	}
 
 	@Override
@@ -134,7 +135,8 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
 	@Override
 	public void deleteRecommendations(int productId) {
-
+		messageSources.outputRecommendations()
+				.send(MessageBuilder.withPayload(new Event(DELETE, productId, null)).build());
 	}
 
 	@Override
@@ -157,7 +159,8 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
 	@Override
 	public void deleteReviews(int productId) {
-
+		messageSources.outputReviews()
+				.send(MessageBuilder.withPayload(new Event(DELETE, productId, null)).build());
 	}
 
 

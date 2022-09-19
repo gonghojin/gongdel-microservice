@@ -119,6 +119,15 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 
 	@Override
 	public void deleteCompositeProduct(int productId) {
+		try {
+			LOG.debug("deleteCompositeProduct: Deletes a product aggregate for productId: {}", productId);
 
+			integration.deleteProduct(productId);
+			integration.deleteRecommendations(productId);
+			integration.deleteReviews(productId);
+		} catch (RuntimeException re) {
+			LOG.warn("deleteCompositeProduct failed: {}", re.toString());
+			throw re;
+		}
 	}
 }
