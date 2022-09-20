@@ -36,6 +36,10 @@ public class ProductServiceImpl implements ProductService {
 						ex -> new InvalidInputException("Duplicate key, Product Id: " + body.getProductId())
 				)
 				.map(e -> mapper.entityToApi(e));
+
+		// MessageProcessor 는 블로킹 프로그래밍 모델을 기반으로 하므로, block 메서드를 호출한 후에 결과 반환
+		// block() 메서드를 호출하지 않으면, 메시징 시스템이 서비스 구현에서 발생한 오류를 처리하지 못하므로,
+		// 이벤트가 대기열로 다시 들어가지 못하고, 데드 레터 대기열로 이동하게 된다
 		return newEntity.block();
 
 	}
