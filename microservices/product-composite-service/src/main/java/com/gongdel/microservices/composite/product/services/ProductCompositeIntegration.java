@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.health.Health;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.Output;
 import org.springframework.messaging.MessageChannel;
@@ -194,5 +195,28 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 		}
 	}
 
+	public Mono<Health> getProductHealth() {
+		return getHealth(productServiceUrl);
+	}
 
+	public Mono<Health> getRecommendationHealth() {
+		return getHealth(recommendationServiceUrl);
+	}
+
+	public Mono<Health> getReviewHealth() {
+		return getHealth(reviewServiceUrl);
+	}
+
+	// msa 에서 각 인스턴스의 상태를 체크
+	private Mono<Health> getHealth(String url) {
+		url += "/actuator/health";
+		LOG.debug("Will call the Health API on URL: {}", url);
+
+		return webClient.get().uri(url)
+				.retrieve()
+				.bodyToMono(String.class)
+				.map(s -> new Health.Builder().up().build())
+				.onErrorResume(ex -> Mono.just(new Health.Builder().down(ex).build()))
+				.log();
+	}
 }

@@ -94,6 +94,8 @@ logging:
     root: INFO
     se.magnus: DEBUG
 
+## 이러한 구성 설정은 개발 단계에선 유용, 상용 시 과도한 정보 제공은 보안상 문제 있음
+##  따라서 actuator 엔트포인트 공개 정보는 최소화 필요
 management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"
 ---
