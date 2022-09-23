@@ -1,10 +1,7 @@
 package com.gongdel.microservices.api.composite.product;
 
-import lombok.Getter;
-
 import java.util.List;
 
-@Getter
 public class ProductAggregate {
 
 	private final int productId;
@@ -39,4 +36,27 @@ public class ProductAggregate {
 		this.serviceAddresses = serviceAddresses;
 	}
 
+	public int getProductId() {
+		return productId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public int getWeight() {
+		return weight;
+	}
+
+	public List<RecommendationSummary> getRecommendations() {
+		return recommendations;
+	}
+
+	public List<ReviewSummary> getReviews() {
+		return reviews;
+	}
+
+	public ServiceAddresses getServiceAddresses() {
+		return serviceAddresses;
+	}
 }

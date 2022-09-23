@@ -1,8 +1,5 @@
 package com.gongdel.microservices.api.composite.product;
 
-import lombok.Getter;
-
-@Getter
 public class ReviewSummary {
 
 	private final int reviewId;
@@ -24,4 +21,19 @@ public class ReviewSummary {
 		this.content = content;
 	}
 
+	public int getReviewId() {
+		return reviewId;
+	}
+
+	public String getAuthor() {
+		return author;
+	}
+
+	public String getSubject() {
+		return subject;
+	}
+
+	public String getContent() {
+		return content;
+	}
 }

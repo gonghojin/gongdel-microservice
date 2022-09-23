@@ -1,9 +1,5 @@
 package com.gongdel.microservices.api.composite.product;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-@Getter
 public class RecommendationSummary {
 
 	private final int recommendationId;
@@ -23,5 +19,21 @@ public class RecommendationSummary {
 		this.author = author;
 		this.rate = rate;
 		this.content = content;
+	}
+
+	public int getRecommendationId() {
+		return recommendationId;
+	}
+
+	public String getAuthor() {
+		return author;
+	}
+
+	public int getRate() {
+		return rate;
+	}
+
+	public String getContent() {
+		return content;
 	}
 }
