@@ -4,19 +4,20 @@ import com.gongdel.microservices.api.core.review.Review;
 import com.gongdel.microservices.api.core.review.ReviewService;
 import com.gongdel.microservices.api.event.Event;
 import com.gongdel.util.exceptions.EventProcessingException;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.cloud.stream.messaging.Sink;
 
 @EnableBinding(Sink.class)
-@RequiredArgsConstructor
 public class MessageProcessor {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MessageProcessor.class);
-	private final ReviewService reviewService;
+
+	@Autowired
+	private ReviewService reviewService;
 
 	@StreamListener(target = Sink.INPUT)
 	public void process(Event<Integer, Review> event) {

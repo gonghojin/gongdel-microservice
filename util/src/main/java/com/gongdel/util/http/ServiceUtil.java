@@ -11,6 +11,7 @@ import java.net.UnknownHostException;
 
 @Component
 public class ServiceUtil {
+
     private static final Logger LOG = LoggerFactory.getLogger(ServiceUtil.class);
 
     private final String port;

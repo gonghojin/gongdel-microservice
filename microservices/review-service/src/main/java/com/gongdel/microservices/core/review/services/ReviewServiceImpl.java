@@ -6,10 +6,10 @@ import com.gongdel.microservices.core.review.persistence.ReviewEntity;
 import com.gongdel.microservices.core.review.persistence.ReviewRepository;
 import com.gongdel.util.exceptions.InvalidInputException;
 import com.gongdel.util.http.ServiceUtil;
-import lombok.RequiredArgsConstructor;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
@@ -20,15 +20,23 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 
 @RestController
-@RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ReviewServiceImpl.class);
 
-	private final ReviewRepository repository;
-	private final ReviewMapper mapper;
-	private final ServiceUtil serviceUtil;
-	private final Scheduler scheduler;
+	private ReviewRepository repository;
+	private ReviewMapper mapper;
+	private ServiceUtil serviceUtil;
+	private Scheduler scheduler;
+
+	@Autowired
+	public ReviewServiceImpl(ReviewRepository repository, ReviewMapper mapper, ServiceUtil serviceUtil,
+							 Scheduler scheduler) {
+		this.repository = repository;
+		this.mapper = mapper;
+		this.serviceUtil = serviceUtil;
+		this.scheduler = scheduler;
+	}
 
 	@Override
 	public Review createReview(Review body) {

@@ -5,8 +5,8 @@ import com.gongdel.microservices.api.core.recommendation.Recommendation;
 import com.gongdel.microservices.api.core.review.Review;
 import com.gongdel.util.exceptions.InvalidInputException;
 import com.gongdel.util.exceptions.NotFoundException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,7 +25,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-class ProductCompositeIntegrationTest {
+public class ProductCompositeIntegrationTest {
 
 	private static final int PRODUCT_ID_OK = 1;
 	private static final int PRODUCT_ID_NOT_FOUND = 2;
@@ -37,9 +37,8 @@ class ProductCompositeIntegrationTest {
 	@Autowired
 	private WebTestClient client;
 
-	@BeforeEach
+	@Before
 	public void setUp() {
-
 		when(compositeIntegration.getProduct(PRODUCT_ID_OK))
 				.thenReturn(Mono.just(new Product(PRODUCT_ID_OK, "name", 1, "mock-address")));
 

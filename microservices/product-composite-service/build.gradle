@@ -42,6 +42,11 @@ dependencies {
     // lombok
     implementation 'org.projectlombok:lombok:1.18.22'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0' // v1.18.16+ 부터
+
+    // mapstruct
+    implementation 'org.mapstruct:mapstruct:1.4.2.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
 
     testImplementation('org.springframework.cloud:spring-cloud-stream-test-support')
     testImplementation('org.springframework.boot:spring-boot-starter-test')

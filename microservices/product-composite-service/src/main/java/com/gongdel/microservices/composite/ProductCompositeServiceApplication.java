@@ -1,7 +1,7 @@
 package com.gongdel.microservices.composite;
 
 import com.gongdel.microservices.composite.product.services.ProductCompositeIntegration;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.health.CompositeReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.DefaultReactiveHealthIndicatorRegistry;
@@ -16,11 +16,17 @@ import java.util.LinkedHashMap;
 
 @SpringBootApplication
 @ComponentScan("com.gongdel")
-@RequiredArgsConstructor
 public class ProductCompositeServiceApplication {
 
-	private final HealthAggregator healthAggregator;
-	private final ProductCompositeIntegration integration;
+	private HealthAggregator healthAggregator;
+	private ProductCompositeIntegration integration;
+
+	@Autowired
+	public ProductCompositeServiceApplication(HealthAggregator healthAggregator,
+											  ProductCompositeIntegration integration) {
+		this.healthAggregator = healthAggregator;
+		this.integration = integration;
+	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(ProductCompositeServiceApplication.class, args);

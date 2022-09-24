@@ -1,9 +1,9 @@
 package com.gongdel.microservices.core.product;
 
 import com.gongdel.microservices.core.product.persistence.ProductEntity;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -19,11 +19,11 @@ import org.springframework.data.mongodb.core.mapping.MongoPersistentEntity;
 import org.springframework.data.mongodb.core.mapping.MongoPersistentProperty;
 
 @SpringBootApplication
-@RequiredArgsConstructor
 @ComponentScan("com.gongdel")
 public class ProductServiceApplication {
 
-	private final ReactiveMongoOperations mongoTemplate;
+	@Autowired
+	private ReactiveMongoOperations mongoTemplate;
 
 	private static final Logger LOG = LoggerFactory.getLogger(ProductServiceApplication.class);
 

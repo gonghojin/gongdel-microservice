@@ -1,9 +1,5 @@
 package com.gongdel.microservices.api.composite.product;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-@Getter
 public class ServiceAddresses {
 
 	private final String cmp;
@@ -23,6 +19,21 @@ public class ServiceAddresses {
 		this.cmp = compositeAddress;
 		this.pro = productAddress;
 		this.rev = reviewAddress;
-		this.rec = recommendationAddress;
+		this.rec = recommendationAddress;	}
+
+	public String getCmp() {
+		return cmp;
+	}
+
+	public String getPro() {
+		return pro;
+	}
+
+	public String getRev() {
+		return rev;
+	}
+
+	public String getRec() {
+		return rec;
 	}
 }

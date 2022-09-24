@@ -4,21 +4,21 @@ import com.gongdel.microservices.api.core.prduct.Product;
 import com.gongdel.microservices.api.core.prduct.ProductService;
 import com.gongdel.microservices.api.event.Event;
 import com.gongdel.util.exceptions.EventProcessingException;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.cloud.stream.messaging.Sink;
 
 // 하나의 토픽만 수신
 @EnableBinding(Sink.class)
-@RequiredArgsConstructor
 public class MessageProcessor {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MessageProcessor.class);
 
-	private final ProductService productService;
+	@Autowired
+	private ProductService productService;
 
 	@StreamListener(target = Sink.INPUT)
 	public void process(Event<Integer, Product> event) {

@@ -6,16 +6,15 @@ import com.gongdel.microservices.core.recommendation.persistence.RecommendationE
 import com.gongdel.microservices.core.recommendation.persistence.RecommendationRepository;
 import com.gongdel.util.exceptions.InvalidInputException;
 import com.gongdel.util.http.ServiceUtil;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequiredArgsConstructor
 public class RecommendationServiceImpl implements RecommendationService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(RecommendationServiceImpl.class);
@@ -23,6 +22,13 @@ public class RecommendationServiceImpl implements RecommendationService {
 	private final RecommendationRepository repository;
 	private final RecommendationMapper mapper;
 	private final ServiceUtil serviceUtil;
+
+	@Autowired
+	public RecommendationServiceImpl(RecommendationRepository repository, RecommendationMapper mapper, ServiceUtil serviceUtil) {
+		this.repository = repository;
+		this.mapper = mapper;
+		this.serviceUtil = serviceUtil;
+	}
 
 	@Override
 	public Recommendation createRecommendation(Recommendation body) {

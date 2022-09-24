@@ -7,20 +7,26 @@ import com.gongdel.microservices.core.product.persistence.ProductRepository;
 import com.gongdel.util.exceptions.InvalidInputException;
 import com.gongdel.util.exceptions.NotFoundException;
 import com.gongdel.util.http.ServiceUtil;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequiredArgsConstructor
 @Slf4j
 public class ProductServiceImpl implements ProductService {
 
 	private final ProductRepository repository;
 	private final ProductMapper mapper;
 	private final ServiceUtil serviceUtil;
+
+	@Autowired
+	public ProductServiceImpl(ProductRepository repository, ProductMapper mapper, ServiceUtil serviceUtil) {
+		this.repository = repository;
+		this.mapper = mapper;
+		this.serviceUtil = serviceUtil;
+	}
 
 	@Override
 	public Product createProduct(Product body) {

@@ -9,9 +9,9 @@ import com.gongdel.microservices.api.core.prduct.Product;
 import com.gongdel.microservices.api.core.recommendation.Recommendation;
 import com.gongdel.microservices.api.core.review.Review;
 import com.gongdel.util.http.ServiceUtil;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
@@ -19,13 +19,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequiredArgsConstructor
 public class ProductCompositeServiceImpl implements ProductCompositeService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ProductCompositeServiceImpl.class);
 
 	private final ProductCompositeIntegration integration;
 	private final ServiceUtil serviceUtil;
+
+	@Autowired
+	public ProductCompositeServiceImpl(ProductCompositeIntegration integration, ServiceUtil serviceUtil) {
+		this.integration = integration;
+		this.serviceUtil = serviceUtil;
+	}
 
 	// 생성 이벤트 publish
 	@Override

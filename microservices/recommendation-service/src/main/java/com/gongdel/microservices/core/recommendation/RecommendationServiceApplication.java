@@ -1,11 +1,13 @@
 package com.gongdel.microservices.core.recommendation;
 
-import lombok.RequiredArgsConstructor;
+import com.gongdel.microservices.core.recommendation.persistence.RecommendationEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.mapping.context.MappingContext;
@@ -15,13 +17,13 @@ import org.springframework.data.mongodb.core.index.MongoPersistentEntityIndexRes
 import org.springframework.data.mongodb.core.index.ReactiveIndexOperations;
 import org.springframework.data.mongodb.core.mapping.MongoPersistentEntity;
 import org.springframework.data.mongodb.core.mapping.MongoPersistentProperty;
-import com.gongdel.microservices.core.recommendation.persistence.RecommendationEntity;
 
 @SpringBootApplication
-@RequiredArgsConstructor
+@ComponentScan("com.gongdel")
 public class RecommendationServiceApplication {
 
-	private final ReactiveMongoOperations mongoTemplate;
+	@Autowired
+	private ReactiveMongoOperations mongoTemplate;
 	private static final Logger LOG = LoggerFactory.getLogger(RecommendationServiceApplication.class);
 
 	public static void main(String[] args) {
