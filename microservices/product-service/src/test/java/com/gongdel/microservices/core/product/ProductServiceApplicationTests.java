@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static com.gongdel.microservices.api.event.Event.Type.CREATE;
+import static com.gongdel.microservices.api.event.Event.Type.DELETE;
 import static org.junit.Assert.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.OK;
@@ -52,7 +53,7 @@ public class ProductServiceApplicationTests {
 		sendCreateProductEvent(productId);
 
 		assertNotNull(repository.findByProductId(productId).block());
-		assertEquals(1, (long)repository.count().block());
+		assertEquals(1, (long) repository.count().block());
 
 		getAndVerifyProduct(productId, OK)
 				.jsonPath("$.productId").isEqualTo(productId);
@@ -78,5 +79,20 @@ public class ProductServiceApplicationTests {
 				.expectStatus().isEqualTo(expectedStatus)
 				.expectHeader().contentType(APPLICATION_JSON)
 				.expectBody();
+	}
+
+	@Test
+	public void deleteProduct() {
+		int productId = 1;
+		sendCreateProductEvent(productId);
+		assertNotNull(repository.findByProductId(productId).block());
+
+		sendDeleteProductEvent(productId);
+		assertNull(repository.findByProductId(productId).block());
+	}
+
+	private void sendDeleteProductEvent(int productId) {
+		Event<Integer, Product> event = new Event(DELETE, productId, null);
+		input.send(new GenericMessage<>(event));
 	}
 }

@@ -8,6 +8,8 @@ import com.gongdel.util.exceptions.InvalidInputException;
 import com.gongdel.util.exceptions.NotFoundException;
 import com.gongdel.util.http.ServiceUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +18,8 @@ import reactor.core.publisher.Mono;
 @RestController
 @Slf4j
 public class ProductServiceImpl implements ProductService {
+
+	private static final Logger LOG = LoggerFactory.getLogger(ProductServiceImpl.class);
 
 	private final ProductRepository repository;
 	private final ProductMapper mapper;
@@ -69,6 +73,13 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public void deleteProduct(int productId) {
+		if (productId < 1) {
+			throw new InvalidInputException("Invalid productId: " + productId);
+		}
 
+		LOG.debug("deleteProduct: tries to delete an entity with productId: {}", productId);
+		repository.findByProductId(productId).log()
+				.map(e -> repository.delete(e))
+				.flatMap(e -> e).block();
 	}
 }
