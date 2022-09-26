@@ -27,5 +27,6 @@
     
 ### 토픽당 2개의 파티션으로 rabbitMq  사용
 ```
-
+❯ export COMPOSE_FILE=docker-compose-partitions.yml
+❯ docker-compose build && docker-compose up 
 ```
