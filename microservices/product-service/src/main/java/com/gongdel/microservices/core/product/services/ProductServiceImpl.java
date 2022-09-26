@@ -81,5 +81,6 @@ public class ProductServiceImpl implements ProductService {
 		repository.findByProductId(productId).log()
 				.map(e -> repository.delete(e))
 				.flatMap(e -> e).block();
+		// https://velog.io/@backtony/Spring-WebFlux-%EB%A6%AC%EC%95%A1%ED%84%B0-%ED%83%80%EC%9E%85-%EB%A6%AC%ED%8F%AC%EC%A7%80%ED%86%A0%EB%A6%AC-%ED%85%8C%EC%8A%A4%ED%8A%B8
 	}
 }
