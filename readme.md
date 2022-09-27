@@ -30,3 +30,29 @@
 ❯ export COMPOSE_FILE=docker-compose-partitions.yml
 ❯ docker-compose build && docker-compose up 
 ```
+
+### 토픽당 2개의 파티션으로 카프카로 대체해보기
+```
+❯ export COMPOSE_FILE=docker-compose-kafka.yml
+❯ docker-compose build && docker-compose up 
+```
+
++ 커맨드로 실행해 토픽 목록 확인
+```
+❯ docker-compose exec kafka /opt/kafka/bin/kafka-topics.sh --zookeeper zookeeper --list
+```
+
++ `product` 토픽과 같은 특정 토픽의 파티션을 보려면
+```
+❯ docker-compose exec kafka /opt/kafka/bin/kafka-topics.sh --describe --zookeeper zookeeper --topic products
+```
+
++ `product` 토픽과 같은 특정 토픽의 `모든 메시지`를 보려면
+```
+❯ docker-compose exec kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic products --from-beginning --timeout-ms 1000 
+```
+
++  `product` 토픽의 파티션 1과 같은 특정 파티션의 모든 메시지를 보려면
+````
+❯ docker-compose exec kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic products --from-beginning --timeout-ms 1000 --partition 1
+````
