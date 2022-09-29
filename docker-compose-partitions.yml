@@ -87,7 +87,7 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
-        
+  
   mongodb:
     image: mongo:3.6.9
     mem_limit: 350m
@@ -99,7 +99,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-
+  
   mysql:
     image: mysql:5.7
     mem_limit: 350m
@@ -115,7 +115,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-
+  
   rabbitmq:
     image: rabbitmq:3.7.8-management
     mem_limit: 350m
@@ -127,3 +127,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+  
+  eureka:
+    build: spring-cloud/eureka-server
+    mem_limit: 350m
+    ports:
+      - "8761:8761"
