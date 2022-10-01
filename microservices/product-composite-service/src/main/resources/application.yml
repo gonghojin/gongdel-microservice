@@ -51,6 +51,19 @@ api:
 server.port: 7000
 server.error.include-message: always
 
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/ # 유레카 서버를 가리킴.
+    initialInstanceInfoReplicationIntervalSeconds: 5 # 아래의 매캐변수는 시작 시간과 중디된 아미크로 서비스의 인스턴스의 등록 해제에 걸리는 시간 최소화하기 위함
+    registryFetchIntervalSeconds: 5
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 5
+
+ribbon.ServerListRefreshInterval: 5000
+ribbon.NFLoadBalancerPingInterval: 5
+
 app:
   product-service:
     host: localhost
