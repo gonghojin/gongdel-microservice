@@ -70,3 +70,27 @@
 그 이유는 DNS 클라이언트는 보통 `리졸브된 IP 주소를 캐시`하며, DNS 이름에 대응되는 IP 주소가 여러 개일지라도, 동작하는 첫번 째 IP 주소를 계속 사용한다.  
 
 따라서 DNS 서버와 DNS 프로토콜은 동적으로 변하는 마이크로 서비스 인스턴스를 처리하는 데, 부적합하다.
+
+### 검색 서비스 사용
++ 확장
+  - 검색 서비스를 테스트하기 위한, review ms instance 2개 더 확장  
+``
+❯ docker-compose up -d --scale review = 3
+``
+    
+
++ 실행 후 `8761` 포트로 브라우저 실행 후, review 인스턴스 3개 확인  
+  + 새 인스턴스가 언제 실행됐는지 확인하려면 `docker-compose log -f review` 커맨트 실행
+
+
++ 유레카 서비스가 제공하는 restapi
+```
+❯ curl -H "accept:application/json" localhost:8761/eureka/apps -s | jq -r .applications.application[].instance[].instanceId
+```
+
+
++ 클라이언트 측 로드밸런서로 요청을 보낸 후 결과에 있는 review 서비스의 주소를 확인
+
+````
+❯ curl localhost:8080/product-composite/2 -s | jq -r .serviceAddresses.rev
+````
