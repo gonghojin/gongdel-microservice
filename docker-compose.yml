@@ -37,8 +37,7 @@ services:
   product-composite:
     build: microservices/product-composite-service
     mem_limit: 350m
-    ports:
-      - "8080:8080"
+    ## Removed: port 설정 삭제, Content: 기존 외부 공개 api 를 에지서버로 숨겨서 사용하기 위해 제거(2022.10.04)
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
@@ -88,5 +87,6 @@ services:
   eureka:
     build: spring-cloud/eureka-server
     mem_limit: 350m
-    ports:
-      - "8761:8761"
+    ## Removed: port 설정 삭제, Content: 기존 외부 공개 api 를 에지서버로 숨겨서 사용하기 위해 제거
+    
+  
