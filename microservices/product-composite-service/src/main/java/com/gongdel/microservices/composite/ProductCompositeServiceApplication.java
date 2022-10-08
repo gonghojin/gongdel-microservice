@@ -1,46 +1,25 @@
 package com.gongdel.microservices.composite;
 
-import com.gongdel.microservices.composite.product.services.ProductCompositeIntegration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.health.CompositeReactiveHealthIndicator;
-import org.springframework.boot.actuate.health.DefaultReactiveHealthIndicatorRegistry;
-import org.springframework.boot.actuate.health.HealthAggregator;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-
-import java.util.LinkedHashMap;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @SpringBootApplication
 @ComponentScan("com.gongdel")
 public class ProductCompositeServiceApplication {
 
-	private HealthAggregator healthAggregator;
-	private ProductCompositeIntegration integration;
-
-	@Autowired
-	public ProductCompositeServiceApplication(HealthAggregator healthAggregator,
-											  ProductCompositeIntegration integration) {
-		this.healthAggregator = healthAggregator;
-		this.integration = integration;
+	@Bean
+	@LoadBalanced // 로드밸런서 관련 필터를 해당 빈에 주입, 통합 클래스에서 생성자가 실행될 떄까지 수행되지 않으므로, 별도의 getter 메서드를 두고 늦은 초기화 방식 필요
+	public WebClient.Builder loadBalancedWebClientBuilder() {
+		final WebClient.Builder builder = WebClient.builder();
+		return builder;
 	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(ProductCompositeServiceApplication.class, args);
 	}
 
-	@Bean
-	ReactiveHealthIndicator coreServices() {
-
-		ReactiveHealthIndicatorRegistry registry = new DefaultReactiveHealthIndicatorRegistry(new LinkedHashMap<>());
-
-		registry.register("product", () -> integration.getProductHealth());
-		registry.register("recommendation", () -> integration.getRecommendationHealth());
-		registry.register("review", () -> integration.getReviewHealth());
-
-		return new CompositeReactiveHealthIndicator(healthAggregator, registry);
-	}
 }

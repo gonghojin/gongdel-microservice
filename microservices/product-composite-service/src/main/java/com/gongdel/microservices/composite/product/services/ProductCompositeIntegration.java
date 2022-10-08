@@ -14,7 +14,6 @@ import com.gongdel.util.http.HttpErrorInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.Output;
@@ -38,15 +37,19 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
 	private static final Logger LOG = LoggerFactory.getLogger(ProductCompositeIntegration.class);
 
-	private final WebClient webClient;
+	private final WebClient.Builder webClientBuilder;
+	private WebClient webClient;
+
 	private final ObjectMapper mapper;
 	private final MessageSources messageSources;
 
-	private final String productServiceUrl;
-	private final String recommendationServiceUrl;
-	private final String reviewServiceUrl;
+	// 유레카 서버를 통해 아래의  dn 을 가지고, 로드밸런싱
+	private final String productServiceUrl = "http://product";
+	private final String recommendationServiceUrl = "http://recommendation";
+	private final String reviewServiceUrl = "http://review";
 
-	// 토빅별 채널 등록
+
+	// 토픽별 채널 등록
 	public interface MessageSources {
 
 		String OUTPUT_PRODUCTS = "output-products";
@@ -65,26 +68,15 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
 	@Autowired
 	public ProductCompositeIntegration(
-			WebClient.Builder webClient,
+			WebClient.Builder webClientBuilder,
 			ObjectMapper mapper,
-			MessageSources messageSources,
+			MessageSources messageSources
 
-			@Value("${app.product-service.host}") String productServiceHost,
-			@Value("${app.product-service.port}") int productServicePort,
-
-			@Value("${app.recommendation-service.host}") String recommendationServiceHost,
-			@Value("${app.recommendation-service.port}") int recommendationServicePort,
-
-			@Value("${app.review-service.host}") String reviewServiceHost,
-			@Value("${app.review-service.port}") int reviewServicePort
 	) {
-		this.webClient = webClient.build();
+		this.webClientBuilder = webClientBuilder;
 		this.mapper = mapper;
 		this.messageSources = messageSources;
 
-		this.productServiceUrl = "http://" + productServiceHost + ":" + productServicePort;
-		this.recommendationServiceUrl = "http://" + recommendationServiceHost + ":" + recommendationServicePort;
-		this.reviewServiceUrl = "http://" + reviewServiceHost + ":" + reviewServicePort;
 	}
 
 	@Override
@@ -100,7 +92,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 		String url = productServiceUrl + "/product/" + productId;
 		LOG.debug("Will call the getProduct API on URL: {}", url);
 
-		return webClient.get().uri(url)
+		return getWebClient().get().uri(url)
 				.retrieve()
 				.bodyToMono(Product.class)
 				.log()
@@ -127,7 +119,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 		String url = recommendationServiceUrl + "/recommendation?productId=" + productId;
 		LOG.debug("Will call the getRecommendations API on URL: {}", url);
 
-		return webClient.get().uri(url)
+		return getWebClient().get().uri(url)
 				.retrieve()
 				.bodyToFlux(Recommendation.class)
 				.log()
@@ -152,7 +144,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 		String url = reviewServiceUrl + "/review?productId=" + productId;
 		LOG.debug("Will call the getReviews API on URL: {}", url);
 
-		return webClient.get().uri(url)
+		return getWebClient().get().uri(url)
 				.retrieve()
 				.bodyToFlux(Review.class)
 				.onErrorResume(error -> empty());
@@ -164,6 +156,12 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 				.send(MessageBuilder.withPayload(new Event(DELETE, productId, null)).build());
 	}
 
+	private WebClient getWebClient() {
+		if (webClient == null) {
+			webClient = webClientBuilder.build();
+		}
+		return webClient;
+	}
 
 	private Throwable handleException(Throwable ex) {
 		if (!(ex instanceof WebClientResponseException)) {
