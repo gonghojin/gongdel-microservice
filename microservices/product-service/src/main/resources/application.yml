@@ -3,13 +3,15 @@ server.error.include-message: always
 
 spring.application.name: product # 유레카 서비스가 마이크로서비스 식별자로 사용
 
-app.eureka-server: localhost
-
+app:
+  eureka-username: u
+  eureka-password: p
+  eureka-server: localhost
 
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://${app.eureka-server}:8761/eureka/
+      defaultZone: "http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/"
     initialInstanceInfoReplicationIntervalSeconds: 5
     registryFetchIntervalSeconds: 5
   instance:

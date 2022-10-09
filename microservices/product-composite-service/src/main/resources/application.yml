@@ -53,12 +53,16 @@ server.error.include-message: always
 
 spring.application.name: product-composite
 
-app.eureka-server: localhost
+app:
+  eureka-username: u
+  eureka-password: p
+  eureka-server: localhost
+  auth-server: localhost
 
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://${app.eureka-server}:8761/eureka/ # 유레카 서버를 가리킴.
+      defaultZone: "http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/" # 유레카 서버를 가리킴.
     initialInstanceInfoReplicationIntervalSeconds: 5 # 아래의 매캐변수는 시작 시간과 중디된 아미크로 서비스의 인스턴스의 등록 해제에 걸리는 시간 최소화하기 위함
     registryFetchIntervalSeconds: 5
   instance:

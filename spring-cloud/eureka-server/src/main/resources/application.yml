@@ -1,6 +1,10 @@
 server:
   port: 8761
 
+app:
+  eureka-username: u
+  eureka-password: p
+
 # 독립형 유레카 서버의 표준 구선
 eureka:
   instance:
