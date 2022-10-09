@@ -1,0 +1,32 @@
+plugins {
+    id 'org.springframework.boot' version '2.3.2.RELEASE'
+    id 'java'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.gongdel.springcloud'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    implementation "org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.3.1.RELEASE"
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:2.2.3.RELEASE'
+
+    implementation 'com.nimbusds:nimbus-jose-jwt:6.7'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
