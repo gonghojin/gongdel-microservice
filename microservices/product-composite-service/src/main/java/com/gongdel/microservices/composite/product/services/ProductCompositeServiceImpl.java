@@ -12,9 +12,13 @@ import com.gongdel.util.http.ServiceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,6 +68,38 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 		} catch (RuntimeException re) {
 			LOG.warn("createCompositeProduct failed: {}", re.toString());
 			throw re;
+		}
+	}
+
+	// api 호출 시, 관련된 JWT 를 기록
+	private void logAuthorizationInfo(SecurityContext securityContext) {
+		if (
+				securityContext != null
+						&& securityContext.getAuthentication() != null
+						&& securityContext.getAuthentication() instanceof JwtAuthenticationToken
+		) {
+			Jwt jwt = ((JwtAuthenticationToken) securityContext.getAuthentication()).getToken();
+			logAuthorizationInfo(jwt);
+		} else {
+			LOG.warn("No JWT based Authentication supplied, running tests are we?");
+		}
+	}
+
+	private void logAuthorizationInfo(Jwt jwt) {
+		if (jwt == null) {
+			LOG.warn("No JWT supplied, running tests are we?");
+		} else {
+			if (LOG.isDebugEnabled()) {
+				URL issuer = jwt.getIssuer();
+				List<String> audience = jwt.getAudience();
+
+				Object subject = jwt.getClaims().get("sub");
+				Object scopes = jwt.getClaims().get("scope");
+				Object expires = jwt.getClaims().get("exp");
+
+				LOG.debug("Authorization info: Subject: {}, scopes: {}, expires {}: issuer: {}, audience: {}", subject
+						, scopes, expires, issuer, audience);
+			}
 		}
 	}
 
