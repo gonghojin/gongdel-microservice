@@ -7,7 +7,7 @@ server.ssl:
   key-store: classpath:keystore/edge.p12
   key-store-password: gongdel
   key-alias: localhost
-  
+
 app:
   eureka-username: u
   eureka-password: p
@@ -85,7 +85,14 @@ logging:
     root: INFO
     org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: INFO
     org.springframework.cloud.gateway: TRACE
-
+    
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://${app.auth-server}:9999/.well-known/jwks.json # 권한 부여 서버의 jwt-set 엔드포인트
+          
 ---
 spring.profiles: docker
 
