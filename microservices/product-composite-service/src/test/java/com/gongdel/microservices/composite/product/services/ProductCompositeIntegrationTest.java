@@ -3,6 +3,7 @@ package com.gongdel.microservices.composite.product.services;
 import com.gongdel.microservices.api.core.prduct.Product;
 import com.gongdel.microservices.api.core.recommendation.Recommendation;
 import com.gongdel.microservices.api.core.review.Review;
+import com.gongdel.microservices.composite.product.ProductCompositeServiceApplication;
 import com.gongdel.util.exceptions.InvalidInputException;
 import com.gongdel.util.exceptions.NotFoundException;
 import org.junit.Before;
@@ -24,7 +25,11 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"eureka.client.enabled=false"})
+@SpringBootTest(
+		webEnvironment = RANDOM_PORT,
+		classes = {ProductCompositeServiceApplication.class, TestSecurityConfig.class},
+		properties = {"eureka.client.enabled=false", "spring.main.allow-bean-definition-overriding=true"} // 등록된 bean을 오버라이딩 하기 위해서, default false
+)
 public class ProductCompositeIntegrationTest {
 
 	private static final int PRODUCT_ID_OK = 1;
