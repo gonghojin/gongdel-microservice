@@ -74,8 +74,8 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 				.withClient("reader")
 				.authorizedGrantTypes("code", "authorization_code", "implicit", "password")
 				.redirectUris("http://my.redirect.uri")
-				.secret("{noop}secret")
-				.scopes("product:read")
+				.secret("{noop}secret") // {noop} 는 password 인코딩 사용없이, 문자그대로 비밀번호로 사용( NoOpPasswordEncoder)
+				.scopes("product:read") // https://cheese10yun.github.io/spring-oauth2-provider/
 				.accessTokenValiditySeconds(600_000_000)
 				.and()
 				.withClient("writer")

@@ -116,3 +116,6 @@
 > 권한 부여 서버에 등록된 클라이언트는 Client Id와 Client Secret을 발급받는다.  
 > 클라이언트는 암호와 마찬가지로 Client Secret을 보호해야 한다.  
 > 클라이언트는 리다이렉트 URI를 등록해야 하며, 권한 부여 서버는 사용자 인증을 거쳐 발급한 Grant code(인증코드)와 Token(토큰)을 리다이렉트 URI로 전달한다.
+
+### Oauth 승인 방식
+해당 링크 참조 : https://cheese10yun.github.io/spring-oauth2-provider/
