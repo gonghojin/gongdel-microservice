@@ -76,6 +76,13 @@ spring.cloud.gateway.routes:
       - Path=/headerrouting/**
     filters:
       - SetPath=/501
+  
+  - id: config-server
+    url: http://${app.config-server}:8888
+    predicates:
+      - Path:/config/**
+    filters:
+      - RewritePath=/config/(?<segment>.*), /$\{segment} # /config의 앞 부분을 제거한 후 구성서버로 보낸다.
 
 management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"

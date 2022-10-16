@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = {"eureka.client.enabled=false"})
+@SpringBootTest(properties = {"eureka.client.enabled=false","spring.cloud.config.enabled=false"})
 @AutoConfigureMockMvc
 class AuthorizationServerApplicationTests {
 

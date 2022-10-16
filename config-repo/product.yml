@@ -3,21 +3,6 @@ server.error.include-message: always
 
 spring.application.name: product # 유레카 서비스가 마이크로서비스 식별자로 사용
 
-app:
-  eureka-username: u
-  eureka-password: p
-  eureka-server: localhost
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: "http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/"
-    initialInstanceInfoReplicationIntervalSeconds: 5
-    registryFetchIntervalSeconds: 5
-  instance:
-    leaseRenewalIntervalInSeconds: 5
-    leaseExpirationDurationInSeconds: 5
-    
 spring.data.mongodb:
   host: localhost
   port: 27017
@@ -40,12 +25,9 @@ spring.cloud.stream.rabbit.bindings.input.consumer: # 데드레터 대기열
   autoBindDlq: true
   republishToDlq: true
 
-spring.rabbitmq:
-  host: 127.0.0.1
-  port: 5672
-  username: guest
-  password: guest
-
+spring.cloud.stream.kafka.bindings.input.consumer:
+  enableDlq: true
+  
 logging:
   level:
     root: INFO
@@ -67,3 +49,23 @@ spring.data.mongodb.host: mongodb
 spring.rabbitmq.host: rabbitmq
 
 spring.cloud.stream.kafka.binder.brokers: kafka
+
+---
+spring.profiles: streaming_partitioned # 메시지 브로커에서 파티션을 사용하기 위한 속성 포함
+spring.cloud.stream.bindings.input.consumer:
+  partitioned: true
+  instanceCount: 2
+
+---
+spring.profiles: streaming_instance_0
+spring.cloud.stream.bindings.input.consumer.instanceIndex: 0 # 첫번째 파티션에서 메시지를 소비
+
+---
+spring.profiles: streaming_instance_1
+spring.cloud.stream.bindings.input.consumer.instanceIndex: 1 # 두번쨰 파티션에서 소비
+
+---
+spring.profiles: kafka # 카프카를 메시징 브로커로 사용하기 위한 속성 포함
+
+management.health.rabbit.enabled: false
+spring.cloud.stream.defaultBinder: kafka
