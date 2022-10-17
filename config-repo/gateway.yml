@@ -8,21 +8,7 @@ server.ssl:
   key-store-password: gongdel
   key-alias: localhost
 
-app:
-  eureka-username: u
-  eureka-password: p
-  eureka-server: localhost
-  auth-server: localhost
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: "http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/"
-    initialInstanceInfoReplicationIntervalSeconds: 5
-    registryFetchIntervalSeconds: 5
-  instance:
-    leaseRenewalIntervalInSeconds: 5
-    leaseExpirationDurationInSeconds: 5
+app.config-server: localhost
 
 ribbon.ServerListRefreshInterval: 5000
 
@@ -78,9 +64,9 @@ spring.cloud.gateway.routes:
       - SetPath=/501
   
   - id: config-server
-    url: http://${app.config-server}:8888
+    uri: http://${app.config-server}:8888
     predicates:
-      - Path:/config/**
+      - Path=/config/**
     filters:
       - RewritePath=/config/(?<segment>.*), /$\{segment} # /config의 앞 부분을 제거한 후 구성서버로 보낸다.
 
@@ -103,6 +89,4 @@ spring:
 ---
 spring.profiles: docker
 
-app:
-  eureka-server: eureka
-  auth-server: auth-server
+app.config-server: config-server

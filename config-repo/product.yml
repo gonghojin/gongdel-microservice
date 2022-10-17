@@ -34,21 +34,12 @@ logging:
     com.gongdel: DEBUG
     org.springframework.data.mongodb.core.MongoTemplate: DEBUG
 
-management.endpoint.health.show-details: "ALWAYS"
-management.endpoints.web.exposure.include: "*"
-
 ---
 spring.profiles: docker
 
 server.port: 8080
 
-app.eureka-server: eureka
-
 spring.data.mongodb.host: mongodb
-
-spring.rabbitmq.host: rabbitmq
-
-spring.cloud.stream.kafka.binder.brokers: kafka
 
 ---
 spring.profiles: streaming_partitioned # 메시지 브로커에서 파티션을 사용하기 위한 속성 포함
