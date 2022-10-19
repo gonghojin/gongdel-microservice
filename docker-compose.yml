@@ -6,6 +6,8 @@ services:
     mem_limit: 350m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
     depends_on:
       mongodb:
         condition: service_healthy
@@ -17,6 +19,8 @@ services:
     mem_limit: 350m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
     depends_on:
       mongodb:
         condition: service_healthy
@@ -28,6 +32,8 @@ services:
     mem_limit: 350m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
     depends_on:
       mysql:
         condition: service_healthy
@@ -40,6 +46,8 @@ services:
     ## Removed: port 설정 삭제, Content: 기존 외부 공개 api 를 에지서버로 숨겨서 사용하기 위해 제거(2022.10.04)
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -67,8 +75,8 @@ services:
       - MYSQL_USER=user
       - MYSQL_PASSWORD=pwd
     healthcheck:
-      test: [ "CMD", "mysqladmin" ,"ping", "-uuser", "-ppwd", "-h", "localhost" ]
-      interval: 10s
+      test: "/usr/bin/mysql --user=user --password=pwd --execute \"SHOW DATABASES;\""
+      interval: 20s
       timeout: 5s
       retries: 10
   
@@ -85,6 +93,10 @@ services:
       retries: 10
       
   eureka:
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
     build: spring-cloud/eureka-server
     mem_limit: 350m
     ## Removed: port 설정 삭제, Content: 기존 외부 공개 api 를 에지서버로 숨겨서 사용하기 위해 제거
@@ -92,6 +104,8 @@ services:
   gateway:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
     build: spring-cloud/gateway
     mem_limit: 350m
     ports:
@@ -100,5 +114,20 @@ services:
   auth-server:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
     build: spring-cloud/authorization-server
+    mem_limit: 350m
+    ports:
+      - "9999:9999"
+    
+  config-server:
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker,native
+      - ENCRYPT_KEY=${CONFIG_SERVER_ENCRYPT_KEY} # 구성 정보를 암호화하고 해독할 떄 사용할 대칭 암호화 키
+      - SPRING_SECURITY_USER_NAME=${CONFIG_SERVER_USR}
+      - SPRING_SECURITY_USER_PASSWORD=${CONFIG_SERVER_PWD}
+    volumes:
+    - ${PWD}/config-repo:/config-repo
+    build: spring-cloud/config-server
     mem_limit: 350m

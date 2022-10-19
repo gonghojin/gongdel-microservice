@@ -3,6 +3,7 @@ package com.gongdel.microservices.composite.product.services;
 import com.gongdel.microservices.api.composite.product.ProductAggregate;
 import com.gongdel.microservices.api.core.prduct.Product;
 import com.gongdel.microservices.api.event.Event;
+import com.gongdel.microservices.composite.product.ProductCompositeServiceApplication;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +30,11 @@ import static org.springframework.http.HttpStatus.OK;
 import static reactor.core.publisher.Mono.just;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment=RANDOM_PORT, properties = {"eureka.client.enabled=false"})
+@SpringBootTest(
+		webEnvironment = RANDOM_PORT,
+		classes = {ProductCompositeServiceApplication.class, TestSecurityConfig.class},
+		properties = {"spring.main.allow-bean-definition-overriding=true", "eureka.client.enabled=false", "spring" +
+				".cloud.config.enabled=false"})
 public class MessagingTests {
 
 	@Autowired

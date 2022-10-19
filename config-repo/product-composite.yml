@@ -51,24 +51,6 @@ api:
 server.port: 7000
 server.error.include-message: always
 
-spring.application.name: product-composite
-
-app:
-  eureka-username: u
-  eureka-password: p
-  eureka-server: localhost
-  auth-server: localhost
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: "http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/" # 유레카 서버를 가리킴.
-    initialInstanceInfoReplicationIntervalSeconds: 5 # 아래의 매캐변수는 시작 시간과 중디된 아미크로 서비스의 인스턴스의 등록 해제에 걸리는 시간 최소화하기 위함
-    registryFetchIntervalSeconds: 5
-  instance:
-    leaseRenewalIntervalInSeconds: 5
-    leaseExpirationDurationInSeconds: 5
-
 ribbon.ServerListRefreshInterval: 5000 # 클래스 경로에 eureka-client 의존성이 있ㅎ는 경우, @LoadBalancerClient 에  해당 클라이언트 자동주입
 ribbon.NFLoadBalancerPingInterval: 5
 
@@ -89,34 +71,36 @@ spring.cloud.stream:
       destination: reviews
       producer:
         required-groups: auditGroup
-
-spring.cloud.stream.kafka.binder:
-  brokers: 127.0.0.1
-  defaultBrokerPort: 9092
-
-spring.rabbitmq:
-  host: 127.0.0.1
-  port: 5672
-  username: guest
-  password: guest
+        
+spring.security.oauth2.resourceserver.jwt.jwk-set-uri: http://${app.auth-server}:9999/.well-known/jwks.json
 
 logging:
   level:
     root: INFO
     se.magnus: DEBUG
 
-## 이러한 구성 설정은 개발 단계에선 유용, 상용 시 과도한 정보 제공은 보안상 문제 있음
-##  따라서 actuator 엔트포인트 공개 정보는 최소화 필요
-management.endpoint.health.show-details: "ALWAYS"
-management.endpoints.web.exposure.include: "*"
 ---
 spring.profiles: docker
 
 server.port: 8080
 
-app.eureka-server: eureka
+---
+spring.profiles: streaming_partitioned
 
-spring.rabbitmq.host: rabbitmq
+spring.cloud.stream.bindings.output-products.producer:
+  partition-key-expression: payload.key
+  partition-count: 2
 
-spring.cloud.stream.kafka.binder.brokers: kafka
+spring.cloud.stream.bindings.output-recommendations.producer:
+  partition-key-expression: payload.key
+  partition-count: 2
 
+spring.cloud.stream.bindings.output-reviews.producer:
+  partition-key-expression: payload.key
+  partition-count: 2
+
+---
+spring.profiles: kafka
+
+management.health.rabbit.enabled: false
+spring.cloud.stream.defaultBinder: kafka

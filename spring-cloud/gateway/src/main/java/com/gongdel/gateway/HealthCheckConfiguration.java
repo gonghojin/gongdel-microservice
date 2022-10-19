@@ -1,5 +1,7 @@
 package com.gongdel.gateway;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.CompositeReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.DefaultReactiveHealthIndicatorRegistry;
@@ -16,6 +18,8 @@ import java.util.LinkedHashMap;
 
 @Configuration
 public class HealthCheckConfiguration {
+
+	private static final Logger LOG = LoggerFactory.getLogger(HealthCheckConfiguration.class);
 
 	private final WebClient.Builder webClientBuilder;
 	private final HealthAggregator healthAggregator;
@@ -46,7 +50,7 @@ public class HealthCheckConfiguration {
 
 	private Mono<Health> getHealth(String url) {
 		url += "/actuator/health";
-
+		LOG.info("Will call the Health API on URL: {}", url);
 		return getWebClient().get().uri(url)
 				.retrieve().bodyToMono(String.class)
 				.map(s -> new Health.Builder().up().build())
