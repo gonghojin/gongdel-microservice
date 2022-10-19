@@ -15,6 +15,8 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+import java.util.Random;
+
 @RestController
 @Slf4j
 public class ProductServiceImpl implements ProductService {
@@ -24,6 +26,8 @@ public class ProductServiceImpl implements ProductService {
 	private final ProductRepository repository;
 	private final ProductMapper mapper;
 	private final ServiceUtil serviceUtil;
+
+	private final Random randomNumberGenerator = new Random();
 
 	@Autowired
 	public ProductServiceImpl(ProductRepository repository, ProductMapper mapper, ServiceUtil serviceUtil) {
@@ -55,11 +59,13 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Mono<Product> getProduct(int productId) {
+	public Mono<Product> getProduct(int productId, int delay, int faultPercent) {
 		if (productId < 1) {
 			throw new InvalidInputException("Invalid productId: " + productId);
 		}
-		;
+
+		if (delay > 0) simulateDelay(delay);
+		if (faultPercent > 0) throwErrorIfBadLuck(faultPercent);
 
 		return repository.findByProductId(productId)
 				.switchIfEmpty(Mono.error(new NotFoundException("No product found for productId: " + productId)))
@@ -69,6 +75,35 @@ public class ProductServiceImpl implements ProductService {
 					e.setServiceAddress(serviceUtil.getServiceAddress());
 					return e;
 				});
+	}
+
+	private void simulateDelay(int delay) {
+		LOG.debug("Sleeping for {} seconds...", delay);
+		try {
+			Thread.sleep(delay * 1000);
+		} catch (InterruptedException e) {
+		}
+		LOG.debug("Moving on...");
+	}
+
+	// 임의로 생성한 1에서 100 사이의 수가 지정된 오류 백분율보다 크거나 같으면 예외 발생
+	private void throwErrorIfBadLuck(int faultPercent) {
+		int randomThreshold = getRandomNumber(1, 100);
+		if (faultPercent < randomThreshold) {
+			LOG.debug("We got lucky, no error occurred, {} < {}", faultPercent, randomThreshold);
+		} else {
+			LOG.debug("Bad luck, an error occurred, {} >= {}", faultPercent, randomThreshold);
+			throw new RuntimeException("Something went wrong...");
+		}
+	}
+
+
+	private int getRandomNumber(int min, int max) {
+		if (max < min) {
+			throw new RuntimeException("Max must be greater than min");
+		}
+
+		return randomNumberGenerator.nextInt((max - min) + 1) + min;
 	}
 
 	@Override
