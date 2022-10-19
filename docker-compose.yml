@@ -75,8 +75,8 @@ services:
       - MYSQL_USER=user
       - MYSQL_PASSWORD=pwd
     healthcheck:
-      test: [ "CMD", "mysqladmin" ,"ping", "-uuser", "-ppwd", "-h", "localhost" ]
-      interval: 10s
+      test: "/usr/bin/mysql --user=user --password=pwd --execute \"SHOW DATABASES;\""
+      interval: 20s
       timeout: 5s
       retries: 10
   
@@ -118,6 +118,8 @@ services:
       - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
     build: spring-cloud/authorization-server
     mem_limit: 350m
+    ports:
+      - "9999:9999"
     
   config-server:
     environment:

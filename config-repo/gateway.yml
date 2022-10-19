@@ -1,7 +1,5 @@
 server.port: 8443
 
-spring.application.name: gateway
-
 server.ssl:
   key-store-type: PKCS12
   key-store: classpath:keystore/edge.p12
@@ -20,6 +18,13 @@ spring.cloud.gateway.routes:
     uri: lb://product-composite
     predicates:
       - Path=/product-composite/**
+    #        filters:
+    #        - TokenRelay=
+  
+  - id: oauth-server
+    uri: lb://auth-server
+    predicates:
+      - Path=/oauth/**
   
   - id: eureka-api
     uri: http://${app.eureka-server}:8761
@@ -39,6 +44,13 @@ spring.cloud.gateway.routes:
     uri: http://${app.eureka-server}:8761
     predicates:
       - Path=/eureka/**
+  
+  - id: config-server
+    uri: http://${app.config-server}:8888
+    predicates:
+      - Path=/config/**
+    filters:
+      - RewritePath=/config/(?<segment>.*), /$\{segment}
   
   - id: host_route_200
     uri: http://httpstat.us
@@ -62,30 +74,16 @@ spring.cloud.gateway.routes:
       - Path=/headerrouting/**
     filters:
       - SetPath=/501
-  
-  - id: config-server
-    uri: http://${app.config-server}:8888
-    predicates:
-      - Path=/config/**
-    filters:
-      - RewritePath=/config/(?<segment>.*), /$\{segment} # /config의 앞 부분을 제거한 후 구성서버로 보낸다.
 
-management.endpoint.health.show-details: "ALWAYS"
-management.endpoints.web.exposure.include: "*"
+spring.security.oauth2.resourceserver.jwt.jwk-set-uri: http://${app.auth-server}:9999/.well-known/jwks.json
 
 logging:
   level:
     root: INFO
     org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: INFO
     org.springframework.cloud.gateway: TRACE
-    
-spring:
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: http://${app.auth-server}:9999/.well-known/jwks.json # 권한 부여 서버의 jwt-set 엔드포인트
-          
+    org.springframework.web.server.adapter.HttpWebHandlerAdapter: TRACE
+
 ---
 spring.profiles: docker
 
