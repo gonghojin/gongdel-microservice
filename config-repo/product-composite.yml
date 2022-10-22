@@ -74,6 +74,21 @@ spring.cloud.stream:
         
 spring.security.oauth2.resourceserver.jwt.jwk-set-uri: http://${app.auth-server}:9999/.well-known/jwks.json
 
+app.product-service.timeoutSec: 2
+
+resilience4j.circuitbreaker:
+  backends:
+    product:
+      registerHealthIndicator: true # 서킷 브레이커 정보를 health 엔드 포인트에 추가할지 여부
+      ringBufferSizeInClosedState: 5 # 서킷이 닫혀있을 떄 (정상), 버퍼 사이즈
+      failureRateThreshold: 50 # 서킷을  열지 말지 결정하는 실패 threshold 퍼센테이지
+      waitDurationInOpenState: 10000 # half closed 전에 circuit Breaker가 open 되기 전에 기다리는 기간
+      ringBufferSizeInHalfOpenState: 3
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+      ignoreExceptions:
+        - com.gongdel.util.exceptions.InvalidInputException
+        - com.gongdel.util.exceptions.NotFoundException
+        
 logging:
   level:
     root: INFO

@@ -11,9 +11,11 @@ import com.gongdel.microservices.api.event.Event;
 import com.gongdel.util.exceptions.InvalidInputException;
 import com.gongdel.util.exceptions.NotFoundException;
 import com.gongdel.util.http.HttpErrorInfo;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.Output;
@@ -22,10 +24,13 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.net.URI;
+import java.time.Duration;
 
 import static com.gongdel.microservices.api.event.Event.Type.CREATE;
 import static com.gongdel.microservices.api.event.Event.Type.DELETE;
@@ -48,6 +53,8 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 	private final String recommendationServiceUrl = "http://recommendation";
 	private final String reviewServiceUrl = "http://review";
 
+	// 해당 시간을 초과할 시, 에러 발생
+	private final int productServiceTimeoutSec;
 
 	// 토픽별 채널 등록
 	public interface MessageSources {
@@ -70,12 +77,13 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 	public ProductCompositeIntegration(
 			WebClient.Builder webClientBuilder,
 			ObjectMapper mapper,
-			MessageSources messageSources
-
+			MessageSources messageSources,
+     		@Value("${app.product-service.timeoutSec}") int productServiceTimeoutSec
 	) {
 		this.webClientBuilder = webClientBuilder;
 		this.mapper = mapper;
 		this.messageSources = messageSources;
+		this.productServiceTimeoutSec = productServiceTimeoutSec;
 
 	}
 
@@ -87,9 +95,13 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 		return body;
 	}
 
+	@CircuitBreaker(name = "product")
 	@Override
-	public Mono<Product> getProduct(int productId) {
-		String url = productServiceUrl + "/product/" + productId;
+	public Mono<Product> getProduct(int productId, int delay, int faultPercent) {
+		URI url = UriComponentsBuilder
+				.fromUriString(productServiceUrl + "/product/{productId}?delay={delay}&faultPercent={faultPercent}")
+				.build(productId, delay, faultPercent);
+
 		LOG.debug("Will call the getProduct API on URL: {}", url);
 
 		return getWebClient().get().uri(url)
@@ -98,7 +110,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 				.log()
 				.onErrorMap(WebClientResponseException.class,
 						e -> handleException(e)
-				);
+				).timeout(Duration.ofSeconds(productServiceTimeoutSec)); // 해당 시간 초과 시, 에러 발생하여 서킷 브레이커를 트리거
 	}
 
 	@Override

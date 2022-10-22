@@ -8,6 +8,7 @@ import com.gongdel.microservices.api.composite.product.ServiceAddresses;
 import com.gongdel.microservices.api.core.prduct.Product;
 import com.gongdel.microservices.api.core.recommendation.Recommendation;
 import com.gongdel.microservices.api.core.review.Review;
+import com.gongdel.util.exceptions.NotFoundException;
 import com.gongdel.util.http.ServiceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,8 @@ import reactor.core.publisher.Mono;
 import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.integration.handler.advice.RequestHandlerCircuitBreakerAdvice.CircuitBreakerOpenException;
 
 @RestController
 public class ProductCompositeServiceImpl implements ProductCompositeService {
@@ -104,7 +107,7 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 	}
 
 	@Override
-	public Mono<ProductAggregate> getCompositeProduct(int productId) {
+	public Mono<ProductAggregate> getCompositeProduct(int productId, int delay, int faultPercent) {
 		// 병렬 실행 후 Aggregate
 		return Mono.zip(
 				values -> createProductAggregate(
@@ -113,12 +116,21 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 						(List<Review>) values[2],
 						serviceUtil.getServiceAddress()
 				),
-				integration.getProduct(productId), // 해당 API 실패 시, 전체 요청이 실패
-				// 두 API는 예외를 전파하는 대신 가능한 많은 정보를 호출자에게 돌려주기 위해, onErrorResume을 사용하여 빈 오프젝트 반환
+				// 해당 API 실패 시, 전체 요청이 실패 // 두 API는 예외를 전파하는 대신 가능한 많은 정보를 호출자에게 돌려주기 위해, onErrorResume을 사용하여 빈 오프젝트 반환
+				integration.getProduct(productId, delay, faultPercent)
+					.onErrorReturn(CircuitBreakerOpenException.class, getProductFallbackValue(productId)), // 서킷이 열려있을 때 발생하는 예외, 폴백 메서드
 				integration.getRecommendations(productId).collectList(),
 				integration.getReviews(productId).collectList())
 				.doOnError(ex -> LOG.warn("getCompositeProduct failed: {}", ex.toString()))
 				.log();
+	}
+
+
+	private Product getProductFallbackValue(int productId) {
+		if (productId == 13) {
+			throw new NotFoundException("Product Id: " + productId + " not found in fallback cache!");
+		}
+		return new Product(productId, "Fallback product" + productId, productId, serviceUtil.getServiceAddress());
 	}
 
 	private ProductAggregate createProductAggregate(Product product, List<Recommendation> recommendations,

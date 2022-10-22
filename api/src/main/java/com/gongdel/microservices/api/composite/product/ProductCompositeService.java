@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Mono;
 
 @Api(description = "REST API for composite product information.")
@@ -56,7 +57,11 @@ public interface ProductCompositeService {
 	@GetMapping(
 			value = "/product-composite/{productId}",
 			produces = "application/json")
-	Mono<ProductAggregate> getCompositeProduct(@PathVariable int productId);
+	Mono<ProductAggregate> getCompositeProduct(
+			@PathVariable int productId,
+			@RequestParam(value = "delay", required = false, defaultValue = "0") int delay, // 매개변수에 따라 응답 지연
+			@RequestParam(value = "faultPercent", required = false, defaultValue = "0") int faultPercent // 백분율에 따른 무작위 예외 발생
+			);
 
 
 	/**
