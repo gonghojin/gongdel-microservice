@@ -4,6 +4,8 @@ services:
   product:
     build: microservices/product-service
     mem_limit: 350m
+    networks:
+      - my-network
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
@@ -17,6 +19,8 @@ services:
   recommendation:
     build: microservices/recommendation-service
     mem_limit: 350m
+    networks:
+      - my-network
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
@@ -30,6 +34,8 @@ services:
   review:
     build: microservices/review-service
     mem_limit: 350m
+    networks:
+      - my-network
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
@@ -43,6 +49,8 @@ services:
   product-composite:
     build: microservices/product-composite-service
     mem_limit: 350m
+    networks:
+      - my-network
     ## Removed: port 설정 삭제, Content: 기존 외부 공개 api 를 에지서버로 숨겨서 사용하기 위해 제거(2022.10.04)
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -55,6 +63,8 @@ services:
   mongodb:
     image: mongo:3.6.9
     mem_limit: 350m
+    networks:
+      - my-network
     ports:
       - "27017:27017"
     command: mongod --smallfiles
@@ -69,6 +79,8 @@ services:
     mem_limit: 350m
     ports:
       - "3306:3306"
+    networks:
+      - my-network
     environment:
       - MYSQL_ROOT_PASSWORD=rootpwd
       - MYSQL_DATABASE=review-db
@@ -86,6 +98,8 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+    networks:
+      - my-network
     healthcheck:
       test: [ "CMD", "rabbitmqctl", "status" ]
       interval: 10s
@@ -93,6 +107,8 @@ services:
       retries: 10
       
   eureka:
+    networks:
+      - my-network
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
@@ -102,6 +118,8 @@ services:
     ## Removed: port 설정 삭제, Content: 기존 외부 공개 api 를 에지서버로 숨겨서 사용하기 위해 제거
     
   gateway:
+    networks:
+      - my-network
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
@@ -112,6 +130,8 @@ services:
       - "8443:8443"
       
   auth-server:
+    networks:
+      - my-network
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
@@ -122,6 +142,8 @@ services:
       - "9999:9999"
     
   config-server:
+    networks:
+      - my-network
     environment:
       - SPRING_PROFILES_ACTIVE=docker,native
       - ENCRYPT_KEY=${CONFIG_SERVER_ENCRYPT_KEY} # 구성 정보를 암호화하고 해독할 떄 사용할 대칭 암호화 키
@@ -131,3 +153,7 @@ services:
     - ${PWD}/config-repo:/config-repo
     build: spring-cloud/config-server
     mem_limit: 350m
+    
+networks:
+  my-network:
+    name: my-network
