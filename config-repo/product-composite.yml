@@ -76,15 +76,25 @@ spring.security.oauth2.resourceserver.jwt.jwk-set-uri: http://${app.auth-server}
 
 app.product-service.timeoutSec: 2
 
+resilience4j.retry: # 재시도 메커니즘은 일시적인 네트워크 결함과 같이 드물게 발생하는 오류에 매우 유용
+  backends:
+    product:
+      maxRetryAttempts: 3 # 첫번쨰 호출을 포함한 총 재시도 횟수
+      waitDuration: 1000 # 재시도를 다시 수행하기 전의 대기시간
+      retryExceptions: # 재시도를 트리거하는 예외 목록
+        - org.springframework.web.reactive.function.client.WebClientResponseException$InternalServerError # 500 상태코드
+
+management.health.circuitbreakers.enabled: true
+
 resilience4j.circuitbreaker:
   backends:
     product:
       registerHealthIndicator: true # 서킷 브레이커 정보를 health 엔드 포인트에 추가할지 여부
       ringBufferSizeInClosedState: 5 # 서킷이 닫혀있을 떄 (정상), 버퍼 사이즈
-      failureRateThreshold: 50 # 서킷을  열지 말지 결정하는 실패 threshold 퍼센테이지
+      failureRateThreshold: 50 # 서킷을  열지 말지 결정하는 실패 threshold 퍼센테이지 / 위의 설정(5) 값 중, 50프로 , 즉 2 개 이상의 호출이 실패하면 서킷이 열리고, 그외는 닫힘
       waitDurationInOpenState: 10000 # half closed 전에 circuit Breaker가 open 되기 전에 기다리는 기간
       ringBufferSizeInHalfOpenState: 3
-      automaticTransitionFromOpenToHalfOpenEnabled: true
+      automaticTransitionFromOpenToHalfOpenEnabled: true # 대기 시간이 지난 후에, 서킷을 반열림 상태로 자동 전활할지, 첫번째 호출이 들어오길 기다렸다가 반열림 상태로 전환할지를 결정
       ignoreExceptions:
         - com.gongdel.util.exceptions.InvalidInputException
         - com.gongdel.util.exceptions.NotFoundException

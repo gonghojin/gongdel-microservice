@@ -12,6 +12,7 @@ import com.gongdel.util.exceptions.InvalidInputException;
 import com.gongdel.util.exceptions.NotFoundException;
 import com.gongdel.util.http.HttpErrorInfo;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +96,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 		return body;
 	}
 
+	@Retry(name = "product")
 	@CircuitBreaker(name = "product")
 	@Override
 	public Mono<Product> getProduct(int productId, int delay, int faultPercent) {

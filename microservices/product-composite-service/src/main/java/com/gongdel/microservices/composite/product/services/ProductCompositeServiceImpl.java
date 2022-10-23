@@ -10,6 +10,7 @@ import com.gongdel.microservices.api.core.recommendation.Recommendation;
 import com.gongdel.microservices.api.core.review.Review;
 import com.gongdel.util.exceptions.NotFoundException;
 import com.gongdel.util.http.ServiceUtil;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,6 @@ import reactor.core.publisher.Mono;
 import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.springframework.integration.handler.advice.RequestHandlerCircuitBreakerAdvice.CircuitBreakerOpenException;
 
 @RestController
 public class ProductCompositeServiceImpl implements ProductCompositeService {
@@ -118,7 +117,7 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 				),
 				// 해당 API 실패 시, 전체 요청이 실패 // 두 API는 예외를 전파하는 대신 가능한 많은 정보를 호출자에게 돌려주기 위해, onErrorResume을 사용하여 빈 오프젝트 반환
 				integration.getProduct(productId, delay, faultPercent)
-					.onErrorReturn(CircuitBreakerOpenException.class, getProductFallbackValue(productId)), // 서킷이 열려있을 때 발생하는 예외, 폴백 메서드
+						.onErrorReturn(CallNotPermittedException.class, getProductFallbackValue(productId)), // 서킷이 열려있을 때 발생하는 예외, 폴백 메서드
 				integration.getRecommendations(productId).collectList(),
 				integration.getReviews(productId).collectList())
 				.doOnError(ex -> LOG.warn("getCompositeProduct failed: {}", ex.toString()))
