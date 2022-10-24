@@ -161,3 +161,15 @@
 + 전체 workflow 에 대한 추적 정보 : trace 혹은 trace tree
   + 기본 작업 단위(트리의 일부분) : span
     + 하위 스팬으로 구성돼 trace tree 를 형성한다.
+  
+### 테스트
++ 접근 토큰 가져오기
+```
+❯ unset ACCESS_TOKEN  
+❯ ACCESS_TOKEN=$(curl -k https://writer:secret@localhost:8443/oauth/token -d grant_type=password -d username=gongdel -d password=password -s | jq -r .access_token)
+❯ echo $ACCESS_TOKEN 
+```
+#### 정상적인 API 요청 전송 (200반환)
+````
+❯ curl -H "Authorization: Bearer $ACCESS_TOKEN" -k https://localhost:8443/product-composite/2 -w "%{http_code}\n" -o /dev/null -s 
+````
