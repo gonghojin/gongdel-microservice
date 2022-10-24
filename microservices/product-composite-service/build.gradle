@@ -50,6 +50,10 @@ dependencies {
     implementation("io.github.resilience4j:resilience4j-spring-boot2:${resilience4jVersion}")
     implementation("io.github.resilience4j:resilience4j-reactor:${resilience4jVersion}")
 
+    // trace
+    implementation('org.springframework.cloud:spring-cloud-starter-sleuth')
+    implementation('org.springframework.cloud:spring-cloud-starter-zipkin')
+
     // lombok
     implementation 'org.projectlombok:lombok:1.18.22'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'

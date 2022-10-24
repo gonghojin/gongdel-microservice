@@ -25,6 +25,10 @@ spring.rabbitmq:
 spring.cloud.stream.kafka.binder:
   brokers: 127.0.0.1
   defaultBrokerPort: 9092
+  
+spring.zipkin.sender.type: rabbit # zipkin 으로 trace 정보를 보낼 떄 rabbitMq 사용
+spring.sleuth.sampler.probability: 1.0 # 클라우드 슬루스는 기본 10%의 추적정도만 집킨으로 보내므로, 전체 추적 정보를 보내도록 재설정
+
 
 ## 이러한 구성 설정은 개발 단계에선 유용, 상용 시 과도한 정보 제공은 보안상 문제 있음
 ##  따라서 actuator 엔트포인트 공개 정보는 최소화 필요
@@ -41,3 +45,11 @@ spring.cloud.stream.kafka.binder.brokers: kafka
 app:
   eureka-server: eureka
   auth-server: auth-server
+
+---
+spring.profiles: kafka
+
+management.health.rabbit.enabled: false
+spring.cloud.stream.defaultBinder: kafka
+spring.zipkin.sender.type: kafka
+spring.kafka.bootstrap-servers: kafka:9092 # 카프카 서버의 우치

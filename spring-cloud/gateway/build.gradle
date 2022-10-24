@@ -28,6 +28,13 @@ dependencies {
     implementation('org.springframework.security:spring-security-oauth2-resource-server')
     implementation('org.springframework.security:spring-security-oauth2-jose')
 
+    // trace
+    implementation('org.springframework.cloud:spring-cloud-starter-sleuth')
+    implementation('org.springframework.cloud:spring-cloud-starter-zipkin')
+
+    implementation 'org.springframework.cloud:spring-cloud-starter-stream-rabbit:3.0.6.RELEASE'
+    implementation 'org.springframework.cloud:spring-cloud-starter-stream-kafka:3.0.6.RELEASE'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 

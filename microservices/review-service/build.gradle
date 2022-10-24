@@ -39,6 +39,10 @@ dependencies {
     implementation('org.springframework.cloud:spring-cloud-starter-config')
     implementation('org.springframework.retry:spring-retry')
 
+    // trace
+    implementation('org.springframework.cloud:spring-cloud-starter-sleuth')
+    implementation('org.springframework.cloud:spring-cloud-starter-zipkin')
+
     implementation('mysql:mysql-connector-java')
 
     testImplementation('org.springframework.boot:spring-boot-starter-test')
