@@ -51,10 +51,6 @@ api:
 server.port: 7000
 server.error.include-message: always
 
-ribbon.ServerListRefreshInterval: 5000 # 클래스 경로에 eureka-client 의존성이 있ㅎ는 경우, @LoadBalancerClient 에  해당 클라이언트 자동주입
-ribbon.NFLoadBalancerPingInterval: 5
-
-
 spring.cloud.stream:
   defaultBinder: rabbit
   default.contentType: application/json

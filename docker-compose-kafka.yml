@@ -95,16 +95,6 @@ services:
     depends_on:
       - kafka
   
-  eureka:
-    build: spring-cloud/eureka-server
-    mem_limit: 350m
-    networks:
-      - my-network
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker,kafka
-      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
-      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
-  
   gateway:
     build: spring-cloud/gateway
     mem_limit: 350m
