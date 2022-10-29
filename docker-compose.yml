@@ -127,8 +127,6 @@ services:
       - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
     build: spring-cloud/authorization-server
     mem_limit: 350m
-    ports:
-      - "9999:9999"
     
   config-server:
     networks:

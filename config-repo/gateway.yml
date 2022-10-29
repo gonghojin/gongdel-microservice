@@ -11,14 +11,14 @@ app.config-server: localhost
 spring.cloud.gateway.routes:
   
   - id: product-composite
-    uri: lb://product-composite
+    uri: http://product-composite
     predicates:
       - Path=/product-composite/**
     #        filters:
     #        - TokenRelay=
   
   - id: oauth-server
-    uri: lb://auth-server
+    uri: http://auth-server
     predicates:
       - Path=/oauth/**
   
@@ -52,7 +52,7 @@ spring.cloud.gateway.routes:
     filters:
       - SetPath=/501
 
-spring.security.oauth2.resourceserver.jwt.jwk-set-uri: http://${app.auth-server}:9999/.well-known/jwks.json
+spring.security.oauth2.resourceserver.jwt.jwk-set-uri: http://${app.auth-server}/.well-known/jwks.json
 
 logging:
   level:
