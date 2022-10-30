@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product
+  template:
+    metadata:
+      labels:
+        app: product
+    spec:
+      containers:
+        - name: pro
+          image: hands-on/product-service
+          imagePullPolicy: Never # 도커 레지스트리에서 다운하지 않음
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "docker"
+          envFrom:
+            - secretRef:
+                name: config-client-credentials
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              memory: 350Mi
+          livenessProbe: # 마이크로서비스가 비정상이라서 엔드포인트가 200으로 응답하지 않을 경우, 인스턴스를 다시 시작
+            httpGet:
+              scheme: HTTP
+              path: /actuator/info
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10 # 검사 요청 간격
+            timeoutSeconds: 2 # 검사를 실패한 것으로 처리하기 전에 응답을 기다리는 시간
+            failureThreshold: 20 # 몇 번 실패하면 포기할 것인지 지정
+            successThreshold: 1 # 실패한 검사를 다시 성공으로 간주하게 하려면 검사에 몇 번 성공해야하는지 정의 # 리이브니스 프로브에는 반드시 1로 지정해야 한다
+          readinessProbe: # 상태 정검 엔드포인트가 200으로 응답하는 경우에만 인스턴스에 요청을 보낸다
+            httpGet:
+              scheme: HTTP
+              path: /actuator/health
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+            successThreshold: 1
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product
+spec:
+  selector:
+    app: product
+  ports:
+    - port: 80
+      targetPort: 80

@@ -3,6 +3,7 @@ version: '2.1'
 services:
   product:
     build: microservices/product-service
+    image: hands-on/product-service
     mem_limit: 350m
     networks:
       - my-network
@@ -18,6 +19,7 @@ services:
   
   recommendation:
     build: microservices/recommendation-service
+    image: hands-on/recommendation-service
     mem_limit: 350m
     networks:
       - my-network
@@ -33,6 +35,7 @@ services:
   
   review:
     build: microservices/review-service
+    image: hands-on/review-service
     mem_limit: 350m
     networks:
       - my-network
@@ -48,6 +51,7 @@ services:
   
   product-composite:
     build: microservices/product-composite-service
+    image: hands-on/product-composite-service
     mem_limit: 350m
     networks:
       - my-network
@@ -114,6 +118,7 @@ services:
       - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
       - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
     build: spring-cloud/gateway
+    image: hands-on/gateway
     mem_limit: 350m
     ports:
       - "8443:8443"
@@ -126,6 +131,7 @@ services:
       - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
       - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
     build: spring-cloud/authorization-server
+    image: hands-on/auth-server
     mem_limit: 350m
     
   config-server:
@@ -139,6 +145,7 @@ services:
     volumes:
     - ${PWD}/config-repo:/config-repo
     build: spring-cloud/config-server
+    image: hands-on/config-server
     mem_limit: 350m
 
   zipkin:
