@@ -38,4 +38,10 @@ spring.profiles: kafka
 management.health.rabbit.enabled: false
 spring.cloud.stream.defaultBinder: kafka
 spring.zipkin.sender.type: kafka
-spring.kafka.bootstrap-servers: kafka:9092 # 카프카 서버의 우치
+spring.kafka.bootstrap-servers: kafka:9092 # 카프카 서버의 위치
+
+---
+spring.profiles: prod
+spring.rabbitmq.host: 172.17.0.1 # 미니큐브를 사용해 도커 엔진을 생성했을 때의 기본 IP
+
+management.endpoints.web.exposure.include: health,info,circuitbreakerevents # 쿠버네티스의 probe가 사용하는 엔드포인트 및 테스트스크립트에서 사용하는 엔드포인트

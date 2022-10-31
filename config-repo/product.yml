@@ -60,3 +60,14 @@ spring.profiles: kafka # 카프카를 메시징 브로커로 사용하기 위한
 
 management.health.rabbit.enabled: false
 spring.cloud.stream.defaultBinder: kafka
+
+---
+spring.profiles: prod
+
+spring.data.mongodb.host: 172.17.0.1
+
+logging:
+  level:
+    root: WARN
+    se.magnus: WARN
+    org.springframework.data.mongodb.core.MongoTemplate: WARN

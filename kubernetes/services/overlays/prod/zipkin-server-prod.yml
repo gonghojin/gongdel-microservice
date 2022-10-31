@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zipkin-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zipkin-server
+  template:
+    metadata:
+      labels:
+        app: zipkin-server
+    spec:
+      containers:
+      - name: zipkin-server
+        env: # 구성을 구성 저장소에 저장하지 않고, 구성정보를 환경 변수로 정의한해 디플로이먼트에 추가
+          - name: LOGGING_LEVEL_ROOT
+            value: WARN
+          - name: RABBIT_ADDRESSES
+            value: 172.17.0.1
+        resources:
+          requests:
+            memory: "300Mi"
+          limits:
+            memory: "600Mi"
