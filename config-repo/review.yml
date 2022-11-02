@@ -1,7 +1,5 @@
 server.port: 7003
 server.error.include-message: always
-
-spring.application.name: review # 유레카 서비스가 마이크로서비스 식별자로 사용
     
 # Strongly recommend to set this property to "none" in a production environment!
 spring.jpa.hibernate.ddl-auto: update
@@ -60,12 +58,6 @@ spring.cloud.stream.bindings.input.consumer.instanceIndex: 0
 ---
 spring.profiles: streaming_instance_1
 spring.cloud.stream.bindings.input.consumer.instanceIndex: 1
-
----
-spring.profiles: kafka
-
-management.health.rabbit.enabled: false
-spring.cloud.stream.defaultBinder: kafka
 
 ---
 spring.profiles: prod

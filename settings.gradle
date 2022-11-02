@@ -6,5 +6,4 @@ include ':microservices:recommendation-service'
 include ':microservices:review-service'
 include ':spring-cloud:gateway'
 include ':spring-cloud:authorization-server'
-include ':spring-cloud:config-server'
 

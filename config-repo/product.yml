@@ -1,8 +1,6 @@
 server.port: 7001
 server.error.include-message: always
 
-spring.application.name: product # 유레카 서비스가 마이크로서비스 식별자로 사용
-
 spring.data.mongodb:
   host: localhost
   port: 27017

@@ -121,12 +121,6 @@ spring.cloud.stream.bindings.output-reviews.producer:
   partition-count: 2
 
 ---
-spring.profiles: kafka
-
-management.health.rabbit.enabled: false
-spring.cloud.stream.defaultBinder: kafka
-
----
 spring.profiles: prod
 
 logging:
