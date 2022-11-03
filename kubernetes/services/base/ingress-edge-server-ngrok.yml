@@ -1,0 +1,27 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: edge-ngrok
+  annotations:
+    certmanager.k8s.io/issuer: "letsencrypt-issuer-staging"
+spec:
+  tls:
+  - hosts:
+    - minikube.me
+    secretName: tls-certificate # 인증서 저장 시크릿
+  rules:
+  - host: minikube.me
+    http:
+      paths:
+      - path: /oauth
+        backend:
+          serviceName: auth-server
+          servicePort: 80
+      - path: /product-composite
+        backend:
+          serviceName: product-composite
+          servicePort: 80        
+      - path: /actuator/health
+        backend:
+          serviceName: product-composite
+          servicePort: 80
